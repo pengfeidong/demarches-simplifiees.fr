@@ -10,6 +10,7 @@ class Procedure < ApplicationRecord
   has_one :attestation_template, dependent: :destroy
 
   belongs_to :administrateur
+  belongs_to :service
 
   has_many :assign_to, dependent: :destroy
   has_many :administrateurs_procedures
