@@ -1,0 +1,7 @@
+fr:
+  type_organisme:
+    administration_centrale: 'administration centrale'
+    region: 'région'
+    prefecture: 'préfecture'
+    departement: 'département'
+    commune: 'commune'
