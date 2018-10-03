@@ -23,13 +23,14 @@ class Users::SessionsController < Sessions::SessionsController
       current_user.update(loged_in_with_france_connect: '')
     end
 
-    if user_signed_in?
+    if gestionnaire_signed_in?
+      login_token = current_gestionnaire.login_token!
+      GestionnaireMailer.send_login_token(current_gestionnaire, login_token).deliver_later
+      %i(user gestionnaire administrateur).each { |role| sign_out(role) }
+      flash[:notice] = 'Un email vous permettant de vous connecter vous a été envoyé. Veuillez consulter votre messagerie.'
+      redirect_to root_path
+    elsif user_signed_in?
       redirect_to after_sign_in_path_for(:user)
-    elsif gestionnaire_signed_in?
-      location = stored_location_for(:gestionnaire) || gestionnaire_procedures_path
-      redirect_to location
-    elsif administrateur_signed_in?
-      redirect_to admin_path
     else
       flash.alert = 'Mauvais couple login / mot de passe'
       new
@@ -66,6 +67,19 @@ class Users::SessionsController < Sessions::SessionsController
   def no_procedure
     session['user_return_to'] = nil
     redirect_to new_user_session_path
+  end
+
+  def sign_in_by_link
+    gestionnaire = Gestionnaire.find_by(login_token: params[:login_token])
+    if gestionnaire&.login_token_valid?
+      user = User.find_by(email: gestionnaire.email)
+      administrateur = Administrateur.find_by(email: gestionnaire.email)
+      [user, gestionnaire, administrateur].each { |resource| sign_in(resource) }
+      redirect_to gestionnaire_procedures_path
+    else
+      flash[:alert] = 'Votre lien est invalide ou expiré, veuillez-vous reconnecter.'
+      redirect_to new_user_session_path
+    end
   end
 
   private

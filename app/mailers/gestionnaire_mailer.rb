@@ -34,4 +34,9 @@ class GestionnaireMailer < ApplicationMailer
 
     mail(to: recipient.email, subject: subject)
   end
+
+  def send_login_token(gestionnaire, login_token)
+    @login_token = login_token
+    mail(to: gestionnaire.email)
+  end
 end

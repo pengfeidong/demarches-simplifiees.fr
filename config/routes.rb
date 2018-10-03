@@ -80,6 +80,7 @@ Rails.application.routes.draw do
   devise_scope :user do
     get '/users/sign_in/demo' => redirect("/users/sign_in")
     get '/users/no_procedure' => 'users/sessions#no_procedure'
+    get 'connexion-par-jeton/:login_token' => 'users/sessions#sign_in_by_link', as: 'sign_in_by_link'
   end
 
   devise_scope :gestionnaire do

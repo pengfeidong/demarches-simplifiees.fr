@@ -1,6 +1,7 @@
 class Gestionnaire < ApplicationRecord
   include CredentialsSyncableConcern
   include EmailSanitizableConcern
+  include ActiveRecord::SecureToken
 
   devise :database_authenticatable, :registerable, :async,
     :recoverable, :rememberable, :trackable, :validatable
@@ -154,6 +155,16 @@ class Gestionnaire < ApplicationRecord
     reset_password_token = set_reset_password_token
 
     GestionnaireMailer.invite_gestionnaire(self, reset_password_token).deliver_later
+  end
+
+  def login_token!
+    login_token = Gestionnaire.generate_unique_secure_token
+    update(login_token: login_token, login_token_created_at: DateTime.now)
+    login_token
+  end
+
+  def login_token_valid?
+    30.minutes.ago < login_token_created_at
   end
 
   private
