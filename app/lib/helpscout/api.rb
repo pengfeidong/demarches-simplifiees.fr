@@ -42,7 +42,43 @@ class Helpscout::API
     call_api(:post, CONVERSATIONS, body)
   end
 
+  def reports(from, to)
+    (from..to)
+      .group_by { |date| [date.year, date.month] }
+      .keys
+      .map { |key| { year: key[0], month: key[1] } }
+      .map { |interval| cached_report(interval[:year], interval[:month]) }
+  end
+
   private
+
+  def report(year, month)
+    params = {
+      start: Time.new(year, month).utc.iso8601,
+      end: Time.new(year, month).next_month.utc.iso8601
+    }
+
+    Rails.logger.info "[HelpScout API] Retrieving report for #{month}-#{year}…"
+
+    response = call_api(:get, 'reports/company?' + params.to_query)
+    if !response.success?
+      raise StandardError, "Error while fetching report: #{response.status} '#{response.body}'"
+    end
+
+    payload = JSON.parse(response.body)
+    payload.dig('current')
+  end
+
+  def cached_report(year, month)
+    is_current_month = (year == Date.today.year && month == Date.today.month)
+    if is_current_month
+      raise ArgumentError, 'The report for the current month will change in the future, and cannot be cached.'
+    end
+
+    Rails.cache.fetch("helpscout-report-#{year}-#{month}") do
+      report(year, month)
+    end
+  end
 
   def attachments(file)
     if file.present?

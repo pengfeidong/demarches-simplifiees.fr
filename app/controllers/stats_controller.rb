@@ -13,6 +13,8 @@ class StatsController < ApplicationController
     @dossiers_numbers = dossiers_numbers(dossiers)
 
     @satisfaction_usagers = satisfaction_usagers
+    @contact_percentage = contact_percentage
+
     @dossiers_states = dossiers_states
 
     @procedures_cumulative = cumulative_hash(procedures, :published_at)
@@ -158,6 +160,23 @@ class StatsController < ApplicationController
         data: data
       }
     end
+  end
+
+  def contact_percentage
+    from = Date.new(2017, 10)
+    to = Date.today.prev_month
+
+    Helpscout::API.new
+      .reports(from, to)
+      .map do |report|
+        start_date = report['startDate'].to_time.localtime
+        end_date = report['endDate'].to_time.localtime
+        replies_count = report['totalReplies']
+        dossiers_count = Dossier.where(en_construction_at: start_date..end_date).count
+        monthly_contact_percentage = (replies_count / dossiers_count.to_f) * 100
+
+        [I18n.l(start_date, format: '%b'), monthly_contact_percentage.round(1)]
+      end
   end
 
   def cloned_from_library_procedures_ratio
