@@ -384,6 +384,8 @@ describe Procedure do
       end
 
       expect(subject.attestation_template.title).to eq(procedure.attestation_template.title)
+      expect(subject.attestation_template.logo.url).not_to eq(procedure.attestation_template.logo.url)
+      expect(subject.attestation_template.signature.url).not_to eq(procedure.attestation_template.signature.url)
 
       expect(subject.cloned_from_library).to be(false)
 
