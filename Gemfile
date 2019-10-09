@@ -1,10 +1,11 @@
 source 'https://rubygems.org'
 
 gem 'aasm'
-gem 'actiontext', git: 'https://github.com/kobaltz/actiontext.git', branch: 'archive', require: 'action_text' # Port of ActionText to Rails 5
+#gem 'actiontext', git: 'https://github.com/kobaltz/actiontext.git', branch: 'archive', require: 'action_text' # Port of ActionText to Rails 5
+gem 'actiontext'
 gem 'active_link_to' # Automatically set a class on active links
 gem 'active_model_serializers'
-gem 'activestorage-openstack', git: 'https://github.com/fredZen/activestorage-openstack.git', branch: 'frederic/fix_upload_signature'
+gem 'activestorage-openstack', git: 'https://github.com/pengfeidong/activestorage-openstack.git', branch: 'frederic/fix_upload_signature'
 gem 'administrate'
 gem 'after_party'
 gem 'anchored'
@@ -65,7 +66,7 @@ gem 'rest-client'
 gem 'rgeo-geojson'
 gem 'sanitize-url'
 gem 'sassc-rails' # Use SCSS for stylesheets
-gem 'scenic'
+#gem 'scenic'
 gem 'select2-rails'
 gem 'sentry-raven'
 gem 'skylight'

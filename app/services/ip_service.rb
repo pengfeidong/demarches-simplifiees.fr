@@ -1,4 +1,4 @@
-class IPService
+class IpService
   class << self
     def ip_trusted?(ip)
       ip_address = parse_address(ip)

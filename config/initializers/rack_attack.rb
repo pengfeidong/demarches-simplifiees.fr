@@ -18,7 +18,7 @@ class Rack::Attack
   end
 
   Rack::Attack.safelist('allow from localhost') do |req|
-    IPService.ip_trusted?(req.remote_ip)
+    IpService.ip_trusted?(req.remote_ip)
   end
 
   def self.rack_attack_enabled?
